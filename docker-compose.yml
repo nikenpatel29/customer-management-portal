@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   db:
     container_name: postgres
@@ -12,12 +14,13 @@ services:
     ports:
       - "5332:5432"
     networks:
-      - db
+      - backend-network
     restart: unless-stopped
 
   nikenpatel-api:
     container_name: nikenpatel-api
-    image: nikenpatel/nikenpatel-api
+    build:
+      context: ./backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/nikenpatel
       SPRING_DATASOURCE_USERNAME: nikenpatel
@@ -25,26 +28,27 @@ services:
     ports:
       - "8088:8080"
     networks:
-      - db
+      - backend-network
     depends_on:
       - db
     restart: unless-stopped
 
   nikenpatel-react:
     container_name: nikenpatel-react
-    image: nikenpatel/nikenpatel-react
     build:
-      context: frontend/react
+      context: ./frontend/react
       args:
-        api_base_url: http://localhost:8088
+        api_base_url: http://nikenpatel-api:8080
     ports:
       - "3000:5173"
+    networks:
+      - backend-network
     depends_on:
       - nikenpatel-api
     restart: unless-stopped
 
 networks:
-  db:
+  backend-network:
     driver: bridge
 
 volumes:
