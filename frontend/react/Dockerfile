@@ -1,9 +1,22 @@
+# Use Node 19
 FROM node:19-alpine
-ARG api_base_url
+
+# Set working directory
 WORKDIR /app
-COPY package*.json .
-RUN npm i --silent
-COPY . .
-RUN echo "VITE_API_BASE_URL=${api_base_url}" > .env
+
+# Copy package files
+COPY package.json package-lock.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy source code
+COPY ../.. .
+
+# Build the app
+RUN npm run build
+
+# Serve with a lightweight server
+RUN npm install -g serve
 EXPOSE 5173
-CMD ["npm", "run", "dev"]
+CMD ["serve","-s","build","-l","5173"]
