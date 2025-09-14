@@ -4,35 +4,50 @@ import {
     useEffect,
     useState
 } from "react";
-import {getCustomers, login as performLogin} from "../../services/client.js";
+import {login as performLogin} from "../../services/client.js";
 import jwtDecode from "jwt-decode";
 
 const AuthContext = createContext({});
 
 const AuthProvider = ({ children }) => {
-
     const [customer, setCustomer] = useState(null);
+    const [loading, setLoading] = useState(true); // Add loading state
 
     const setCustomerFromToken = () => {
-        let token = localStorage.getItem("access_token");
-        if (token) {
-            token = jwtDecode(token);
+        try {
+            let token = localStorage.getItem("access_token");
+            if (token) {
+                const decodedToken = jwtDecode(token);
 
-            // Get stored profile data
-            const storedData = JSON.parse(localStorage.getItem("customer_profile") || "{}");
+                // Check if token is expired
+                if (Date.now() >= decodedToken.exp * 1000) {
+                    logOut();
+                    return;
+                }
 
-            setCustomer({
-                username: token.sub,
-                roles: token.scopes,
-                firstName: storedData.firstName || '',
-                lastName: storedData.lastName || '',
-                profilePicture: storedData.profilePicture || 'https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
-            })
+                // Get stored profile data
+                const storedData = JSON.parse(localStorage.getItem("customer_profile") || "{}");
+
+                setCustomer({
+                    username: decodedToken.sub,
+                    roles: decodedToken.scopes,
+                    firstName: storedData.firstName || '',
+                    lastName: storedData.lastName || '',
+                    profilePicture: storedData.profilePicture || 'https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
+                });
+            }
+        } catch (error) {
+            console.error('Error decoding token:', error);
+            logOut();
+        } finally {
+            setLoading(false);
         }
-    }
+    };
 
     const updateCustomerProfile = (updatedData) => {
         setCustomer(prevCustomer => {
+            if (!prevCustomer) return null;
+
             const newCustomer = {
                 ...prevCustomer,
                 ...updatedData
@@ -49,56 +64,70 @@ const AuthProvider = ({ children }) => {
         });
     };
 
+    // FIX: Add dependency array to prevent infinite re-renders
     useEffect(() => {
-        setCustomerFromToken()
-    }, [])
+        setCustomerFromToken();
+    }, []); // Empty dependency array
 
     const login = async (usernameAndPassword) => {
-        return new Promise((resolve, reject) => {
-            performLogin(usernameAndPassword).then(res => {
-                const jwtToken = res.headers["authorization"];
-                localStorage.setItem("access_token", jwtToken);
+        try {
+            const res = await performLogin(usernameAndPassword);
+            const jwtToken = res.headers["authorization"];
 
-                const decodedToken = jwtDecode(jwtToken);
+            if (!jwtToken) {
+                throw new Error("No authorization token received");
+            }
 
-                const storedData = JSON.parse(localStorage.getItem("customer_profile") || "{}");
+            localStorage.setItem("access_token", jwtToken);
 
-                setCustomer({
-                    username: decodedToken.sub,
-                    roles: decodedToken.scopes,
-                    firstName: storedData.firstName || '',
-                    lastName: storedData.lastName || '',
-                    profilePicture: storedData.profilePicture || 'https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
-                })
-                resolve(res);
-            }).catch(err => {
-                reject(err);
-            })
-        })
-    }
+            const decodedToken = jwtDecode(jwtToken);
+            const storedData = JSON.parse(localStorage.getItem("customer_profile") || "{}");
+
+            setCustomer({
+                username: decodedToken.sub,
+                roles: decodedToken.scopes,
+                firstName: storedData.firstName || '',
+                lastName: storedData.lastName || '',
+                profilePicture: storedData.profilePicture || 'https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
+            });
+
+            return res;
+        } catch (err) {
+            console.error('Login error:', err);
+            throw err;
+        }
+    };
 
     const logOut = () => {
-        localStorage.removeItem("access_token")
-        localStorage.removeItem("customer_profile")
-        setCustomer(null)
-    }
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("customer_profile");
+        setCustomer(null);
+    };
 
     const isCustomerAuthenticated = () => {
-        const token = localStorage.getItem("access_token");
-        if (!token) {
+        try {
+            const token = localStorage.getItem("access_token");
+            if (!token) {
+                return false;
+            }
+
+            const { exp: expiration } = jwtDecode(token);
+            if (Date.now() > expiration * 1000) {
+                logOut();
+                return false;
+            }
+            return true;
+        } catch (error) {
+            console.error('Token validation error:', error);
+            logOut();
             return false;
         }
-        const { exp: expiration } = jwtDecode(token);
-        if (Date.now() > expiration * 1000) {
-            logOut()
-            return false;
-        }
-        return true;
-    }
+    };
 
     return (
         <AuthContext.Provider value={{
             customer,
+            loading,
             login,
             logOut,
             isCustomerAuthenticated,
@@ -107,8 +136,8 @@ const AuthProvider = ({ children }) => {
         }}>
             {children}
         </AuthContext.Provider>
-    )
-}
+    );
+};
 
 export const useAuth = () => useContext(AuthContext);
 

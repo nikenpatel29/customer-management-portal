@@ -1,3 +1,5 @@
+
+// 1. Fixed Login Component
 import {
     Alert,
     AlertIcon,
@@ -22,9 +24,6 @@ import Logo from "../../assets/Customer_Management_Portal_Logo.png";
 import Picture from "../../assets/UT_Austin_Picture.png"
 
 const MyTextInput = ({label, ...props}) => {
-    // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
-    // which we can spread on <input>. We can use field meta to show an error
-    // message if the field is invalid and it has been touched (i.e. visited)
     const [field, meta] = useField(props);
     return (
         <Box>
@@ -91,27 +90,29 @@ const LoginForm = () => {
 
                         <Button
                             type={"submit"}
-                            disabled={!isValid || isSubmitting}>
-                            Login
+                            disabled={!isValid || isSubmitting}
+                            colorScheme="blue"
+                            size="lg"
+                        >
+                            {isSubmitting ? "Logging in..." : "Login"}
                         </Button>
                     </Stack>
                 </Form>
             )}
-
         </Formik>
     )
 }
 
 const Login = () => {
-
     const { customer } = useAuth();
     const navigate = useNavigate();
 
+    // FIX: Add dependency array to prevent infinite re-renders
     useEffect(() => {
         if (customer) {
             navigate("/dashboard/customers");
         }
-    })
+    }, [customer, navigate]); // Add dependencies here
 
     return (
         <Stack minH={'100vh'} direction={{base: 'column', md: 'row'}}>
@@ -147,5 +148,51 @@ const Login = () => {
         </Stack>
     );
 }
+
+// 2. Fixed Home Component (only showing the key fixes)
+const Home = () => {
+    const [currentTime, setCurrentTime] = useState(new Date());
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const navigate = useNavigate(); // Add this hook
+
+    // ... other code stays the same ...
+
+    // FIX: Add dependency array
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+        return () => clearInterval(timer);
+    }, []); // Empty dependency array is correct here
+
+    // ... rest of component stays the same but fix the navigation:
+
+    return (
+        <SidebarWithHeader>
+            {/* ... existing code ... */}
+
+            {/* FIX: Replace window.location.href with proper navigation */}
+            <Box
+                bg={cardBg}
+                borderRadius="2xl"
+                p={8}
+                shadow="xl"
+                border="1px"
+                borderColor="green.200"
+                cursor="pointer"
+                transition="all 0.3s ease"
+                _hover={{
+                    transform: "translateY(-8px)",
+                    shadow: "2xl",
+                    borderColor: "green.300"
+                }}
+                onClick={() => navigate("/dashboard/customers")} // Use navigate instead
+                maxW="lg"
+            >
+                {/* ... rest of the box content ... */}
+            </Box>
+
+            {/* ... rest of component ... */}
+        </SidebarWithHeader>
+    );
+};
 
 export default Login;

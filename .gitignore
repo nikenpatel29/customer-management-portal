@@ -1,46 +1,57 @@
-**/target/
-**/.idea/
-**/node_modules/
-**/.DS_Store
-**/*.iml
+### Java / Spring Boot ###
+target/
+*.jar
+*.war
+*.ear
 
-# Javascript
-
-# Logs
-logs
-*.log
+### Node / React ###
+node_modules/
+dist/
+build/
+.cache/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
+### IDEs ###
+.idea/
+*.iml
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Angular
-**/.angular/cache
-.sass-cache/
-connect.lock
-coverage
-libpeerconnection.log
-testem.log
-typings
-
-# Visual Studio Code
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
-.history/*
+
+### OS files ###
+.DS_Store
+Thumbs.db
+
+### Docker ###
+*.pid
+*.seed
+*.bak
+*.swp
+.dockerignore
+docker-compose.override.yml
+
+### Logs ###
+logs/
+*.log
+
+### Environment files ###
+.env
+.env.*
+!env.example
+
+### AWS / Deployment artifacts ###
+*.zip
+*.tar
+*.gz
+*.bak
+*.tmp
+*.old
+
+### History ###
+.history/
