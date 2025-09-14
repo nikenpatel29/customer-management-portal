@@ -47,16 +47,16 @@ public class SecurityConfig {
         return daoAuthenticationProvider;
     }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource)) // Use the injected bean
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/customers").permitAll()
-                        .anyRequest().authenticated()
-                );
-        return http.build();
-    }
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http
+//                .cors(cors -> cors.configurationSource(corsConfigurationSource)) // Use the injected bean
+//                .csrf(csrf -> csrf.disable())
+//                .authorizeHttpRequests(authz -> authz
+//                        .requestMatchers("/api/v1/auth/**").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/api/v1/customers").permitAll()
+//                        .anyRequest().authenticated()
+//                );
+//        return http.build();
+//    }
 }
