@@ -3,30 +3,11 @@ server:
   error:
     include-message: always
 
-cors:
-  allowed-origins: "*"
-  allowed-methods: "*"
-  allowed-headers: "*"
-  exposed-headers: "*"
-
-aws:
-  region: us-east-2
-  s3:
-    mock: false
-    buckets:
-      customer: fs-nikenpatel-customer-test
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "health,info"
-
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/nikenpatel
-    username: nikenpatel
-    password: yourpassword
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://db:5432/nikenpatel}
+    username: ${SPRING_DATASOURCE_USERNAME:nikenpatel}
+    password: ${SPRING_DATASOURCE_PASSWORD:password}
   jpa:
     hibernate:
       ddl-auto: validate
@@ -43,3 +24,22 @@ spring:
       max-request-size: 10MB
   codec:
     max-in-memory-size: 10MB
+
+cors:
+  allowed-origins: "*"
+  allowed-methods: "*"
+  allowed-headers: "*"
+  exposed-headers: "*"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
+
+aws:
+  region: us-east-2
+  s3:
+    mock: false
+    buckets:
+      customer: fs-nikenpatel-customer-test

@@ -6,25 +6,25 @@ services:
     image: postgres:14.1
     environment:
       POSTGRES_USER: nikenpatel
-      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: nikenpatel
       PGDATA: /data/postgres
     volumes:
       - db:/data/postgres
     ports:
-      - "5332:5432"
+      - "5332:5432" # optional, only needed for host access
     networks:
       - backend-network
     restart: unless-stopped
 
-  nikenpatel-api:
+  api:
     container_name: nikenpatel-api
     build:
       context: ./backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/nikenpatel
       SPRING_DATASOURCE_USERNAME: nikenpatel
-      SPRING_DATASOURCE_PASSWORD: yourpassword
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "8088:8080"
     networks:
@@ -33,18 +33,18 @@ services:
       - db
     restart: unless-stopped
 
-  nikenpatel-react:
+  frontend:
     container_name: nikenpatel-react
     build:
       context: ./frontend/react
       args:
-        api_base_url: http://nikenpatel-api:8080
+        api_base_url: http://api:8080
     ports:
       - "3000:5173"
     networks:
       - backend-network
     depends_on:
-      - nikenpatel-api
+      - api
     restart: unless-stopped
 
 networks:
