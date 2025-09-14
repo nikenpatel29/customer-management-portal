@@ -1,10 +1,5 @@
-# Use Java 17
-FROM eclipse-temurin:17-jdk
-
-# Install Maven
-RUN apt-get update && apt-get install -y maven
-
-# Set working directory
+# Stage 1: build with Maven
+FROM maven:3.9.6-eclipse-temurin-17 AS builder
 WORKDIR /app
 
 # Copy project files
@@ -14,8 +9,12 @@ COPY src ./src
 # Build project (skip tests)
 RUN mvn clean package -DskipTests
 
-# Copy built jar
-COPY target/*.jar app.jar
+# Stage 2: run the JAR
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+
+# Copy JAR from builder stage
+COPY --from=builder /app/target/*.jar app.jar
 
 # Expose port
 EXPOSE 8080
