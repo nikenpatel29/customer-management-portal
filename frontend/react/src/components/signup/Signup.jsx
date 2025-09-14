@@ -3,6 +3,8 @@ import {useNavigate} from "react-router-dom";
 import {useEffect} from "react";
 import {Flex, Heading, Image, Link, Stack, Text} from "@chakra-ui/react";
 import CreateCustomerForm from "../shared/CreateCustomerForm.jsx";
+import Logo from "../../assets/Customer_Management_Portal_Logo.png";
+import Picture from "../../assets/UT_Austin_Picture.png"
 
 const Signup = () => {
     const { customer, setCustomerFromToken } = useAuth();
@@ -19,9 +21,9 @@ const Signup = () => {
             <Flex p={8} flex={1} alignItems={'center'} justifyContent={'center'}>
                 <Stack spacing={4} w={'full'} maxW={'md'}>
                     <Image
-                        src={"https://user-images.githubusercontent.com/40702606/210880158-e7d698c2-b19a-4057-b415-09f48a746753.png"}
+                        src={Logo}
                         boxSize={"200px"}
-                        alt={"Amigoscode Logo"}
+                        alt={"Logo"}
                         alignSelf={"center"}
                     />
                     <Heading fontSize={'2xl'} mb={15}>Register for an account</Heading>
@@ -43,17 +45,10 @@ const Signup = () => {
                 justifyContent={"center"}
                 bgGradient={{sm: 'linear(to-r, blue.600, purple.600)'}}
             >
-                <Text fontSize={"6xl"} color={'white'} fontWeight={"bold"} mb={5}>
-                    <Link target={"_blank"} href={"https://amigoscode.com/courses"}>
-                        Enrol Now
-                    </Link>
-                </Text>
                 <Image
                     alt={'Login Image'}
                     objectFit={'scale-down'}
-                    src={
-                        'https://user-images.githubusercontent.com/40702606/215539167-d7006790-b880-4929-83fb-c43fa74f429e.png'
-                    }
+                    src={Picture}
                 />
             </Flex>
         </Stack>

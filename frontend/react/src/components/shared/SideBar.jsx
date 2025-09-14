@@ -10,11 +10,6 @@ import {
     Icon,
     IconButton,
     Link,
-    Menu,
-    MenuButton,
-    MenuDivider,
-    MenuItem,
-    MenuList,
     Text,
     useColorModeValue,
     useDisclosure,
@@ -23,14 +18,13 @@ import {
 } from '@chakra-ui/react';
 
 import {
-    FiBell,
-    FiChevronDown,
     FiHome,
     FiMenu,
     FiSettings,
     FiUsers
 } from 'react-icons/fi';
 import {useAuth} from "../context/AuthContext.jsx";
+import Picture from "../../assets/UT_Austin_Nodes.png";
 
 const LinkItems = [
     {name: 'Home', route: '/dashboard', icon: FiHome},
@@ -85,8 +79,8 @@ const SidebarContent = ({onClose, ...rest}) => {
                 <Image
                     borderRadius='full'
                     boxSize='75px'
-                    src='https://user-images.githubusercontent.com/40702606/210880158-e7d698c2-b19a-4057-b415-09f48a746753.png'
-                    alt='Amigoscode'
+                    src={Picture}
+                    alt='Dashboard Picture'
                 />
                 <CloseButton display={{base: 'flex', md: 'none'}} onClick={onClose}/>
             </Flex>
@@ -131,7 +125,15 @@ const NavItem = ({icon, route, children, ...rest}) => {
 };
 
 const MobileNav = ({onOpen, ...rest}) => {
-    const { logOut, customer } = useAuth()
+    const { customer } = useAuth();
+
+    const profilePicture = customer?.profilePicture ||
+        'https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9';
+
+    const displayName = customer?.firstName && customer?.lastName
+        ? `${customer.firstName} ${customer.lastName}`
+        : customer?.username || 'User';
+
     return (
         <Flex
             ml={{base: 0, md: 60}}
@@ -160,54 +162,20 @@ const MobileNav = ({onOpen, ...rest}) => {
             </Text>
 
             <HStack spacing={{base: '0', md: '6'}}>
-                <IconButton
-                    size="lg"
-                    variant="ghost"
-                    aria-label="open menu"
-                    icon={<FiBell/>}
-                />
                 <Flex alignItems={'center'}>
-                    <Menu>
-                        <MenuButton
-                            py={2}
-                            transition="all 0.3s"
-                            _focus={{boxShadow: 'none'}}>
-                            <HStack>
-                                <Avatar
-                                    size={'sm'}
-                                    src={
-                                        'https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
-                                    }
-                                />
-                                <VStack
-                                    display={{base: 'none', md: 'flex'}}
-                                    alignItems="flex-start"
-                                    spacing="1px"
-                                    ml="2">
-                                    <Text fontSize="sm">{customer?.username}</Text>
-                                    {customer?.roles.map((role, id) => (
-                                        <Text key={id} fontSize="xs" color="gray.600">
-                                            {role}
-                                        </Text>
-                                    ))}
-                                </VStack>
-                                <Box display={{base: 'none', md: 'flex'}}>
-                                    <FiChevronDown/>
-                                </Box>
-                            </HStack>
-                        </MenuButton>
-                        <MenuList
-                            bg={useColorModeValue('white', 'gray.900')}
-                            borderColor={useColorModeValue('gray.200', 'gray.700')}>
-                            <MenuItem>Profile</MenuItem>
-                            <MenuItem>Settings</MenuItem>
-                            <MenuItem>Billing</MenuItem>
-                            <MenuDivider/>
-                            <MenuItem onClick={logOut}>
-                                Sign out
-                            </MenuItem>
-                        </MenuList>
-                    </Menu>
+                    <HStack>
+                        <Avatar
+                            size={'sm'}
+                            src={profilePicture}
+                        />
+                        <VStack
+                            display={{ base: 'none', md: 'flex' }}
+                            alignItems="flex-start"
+                            spacing="1px"
+                            ml="2">
+                            <Text fontSize="sm">{displayName}</Text>
+                        </VStack>
+                    </HStack>
                 </Flex>
             </HStack>
         </Flex>

@@ -10,11 +10,11 @@ cors:
   exposed-headers: "*"
 
 aws:
-  region: eu-west-1
+  region: us-east-2
   s3:
     mock: true
     buckets:
-      customer: fs-amigoscode-customer-test
+      customer: fs-nikenpatel-customer-test
 
 management:
   endpoints:
@@ -24,9 +24,9 @@ management:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5332/customer
-    username: amigoscode
-    password: password
+    url: jdbc:postgresql://localhost:5432/nikenpatel
+    username: nikenpatel
+    password: yourpassword
   jpa:
     hibernate:
       ddl-auto: validate

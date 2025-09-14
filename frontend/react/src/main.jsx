@@ -10,6 +10,7 @@ import AuthProvider from "./components/context/AuthContext.jsx";
 import ProtectedRoute from "./components/shared/ProtectedRoute.jsx";
 import './index.css'
 import Home from "./Home.jsx";
+import Settings from "./Settings.jsx"
 
 const { ToastContainer } = createStandaloneToast();
 
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
     {
         path: "dashboard/customers",
         element: <ProtectedRoute><Customer /></ProtectedRoute>
+    },
+    {
+        path: "dashboard/settings",
+        element: <ProtectedRoute><Settings /></ProtectedRoute>
     }
 ])
 

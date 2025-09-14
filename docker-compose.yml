@@ -3,8 +3,9 @@ services:
     container_name: postgres
     image: postgres:14.1
     environment:
-      POSTGRES_USER: amigoscode
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: nikenpatel
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: nikenpatel
       PGDATA: /data/postgres
     volumes:
       - db:/data/postgres
@@ -13,11 +14,14 @@ services:
     networks:
       - db
     restart: unless-stopped
-  amigoscode-api:
-    container_name: amigoscode-api
-    image: amigoscode/amigoscode-api
+
+  nikenpatel-api:
+    container_name: nikenpatel-api
+    image: nikenpatel/nikenpatel-api
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/customer
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/nikenpatel
+      SPRING_DATASOURCE_USERNAME: nikenpatel
+      SPRING_DATASOURCE_PASSWORD: yourpassword
     ports:
       - "8088:8080"
     networks:
@@ -25,9 +29,10 @@ services:
     depends_on:
       - db
     restart: unless-stopped
-  amigoscode-react:
-    container_name: amigoscode-react
-    image: amigoscode/amigoscode-react
+
+  nikenpatel-react:
+    container_name: nikenpatel-react
+    image: nikenpatel/nikenpatel-react
     build:
       context: frontend/react
       args:
@@ -35,7 +40,7 @@ services:
     ports:
       - "3000:5173"
     depends_on:
-      - amigoscode-api
+      - nikenpatel-api
     restart: unless-stopped
 
 networks:
