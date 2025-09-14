@@ -12,7 +12,7 @@ cors:
 aws:
   region: us-east-2
   s3:
-    mock: true
+    mock: false
     buckets:
       customer: fs-nikenpatel-customer-test
 
