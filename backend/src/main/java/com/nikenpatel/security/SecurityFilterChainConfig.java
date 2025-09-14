@@ -1,35 +1,55 @@
 package com.nikenpatel.security;
 
+import com.nikenpatel.jwt.JWTAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityFilterChainConfig {
 
-    private final CorsConfigurationSource corsConfigurationSource;
+    private final AuthenticationProvider authenticationProvider;
+    private final JWTAuthenticationFilter jwtAuthenticationFilter;
+    private final AuthenticationEntryPoint authenticationEntryPoint;
 
-    public SecurityFilterChainConfig(CorsConfigurationSource corsConfigurationSource) {
-        this.corsConfigurationSource = corsConfigurationSource;
+    public SecurityFilterChainConfig(AuthenticationProvider authenticationProvider,
+                                     JWTAuthenticationFilter jwtAuthenticationFilter,
+                                     @Qualifier("delegatedAuthEntryPoint") AuthenticationEntryPoint authenticationEntryPoint) {
+        this.authenticationProvider = authenticationProvider;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
     @Bean
-    public org.springframework.security.web.SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()                           // disable CSRF
-                .cors(Customizer.withDefaults())            // allow CORS
+                .csrf().disable()
+                .cors(Customizer.withDefaults())
+                // ⚠️ TEMPORARY: allow everyone
                 .authorizeHttpRequests()
-                .anyRequest().permitAll()                   // <-- everyone allowed
+                .anyRequest().permitAll()
                 .and()
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(
+                        jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                )
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint);
 
         return http.build();
     }
-}
 
+}
