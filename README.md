@@ -1,30 +1,32 @@
-# Full Stack Professional
+# Customer Management Portal
 
-Enrol [here](https://amigoscode.com/courses/full-stack-professional) with over *50 Hours* of Content with Plenty of Exercises
+A **full-stack web application** built with **Spring Boot, React, and PostgreSQL**. This project features JWT-based authentication, role-based access control, and AWS S3 integration for file uploads, all containerized with Docker for easy setup and deployment.
 
-![Curriculum](https://user-images.githubusercontent.com/40702606/228275106-73076517-ff4f-40e0-a993-4d05d5a2ea77.png)
+**Developed:** August 2025 – September 2025
 
-Are you ready to level up your coding skills and become a full stack professional? Our new 50+ hours course is designed to equip you with the latest tools and techniques to build impressive, full stack applications that will impress the users and your team.
+---
 
-Over the next three months you will learn how to craft stunning, responsive front-end interfaces that flawlessly communicate with robust, scalable back-end servers, all with the use of industry-standard technologies such as:
+## 🚀 Key Features
 
-- ✅ Spring Boot 3
-- ✅ HTTP & API development
-- ✅ Developer tools for maximum productivity
-- ✅ Robust error handling techniques
-- ✅ Databases & PostgreSQL
-- ✅ Spring Data JPA
-- ✅ Flyway for seamless database migrations
-- ✅ JDBC for efficient database communication
-- ✅ Testing strategies for robust, reliable code
-- ✅ Docker for containerization and deployment
-- ✅ AWS for cloud-based hosting and scaling
-- ✅ DevOps best practices for agile, collaborative development
-- ✅ JavaScript and React for front-end development
-- ✅ Spring Security 6 for secure, authenticated applications
-- ✅ Login/Registration systems for user management
-- ✅ TypeScript for type-safe, scalable code
-- ✅ Angular for powerful, responsive front-end interfaces
+-   🔐 **Secure Authentication & Authorization**: JWT-based authentication and authorization managed by Spring Security.
+-   👤 **Role-Based Access**: Differentiated user experiences for `USER` and `ADMIN` roles.
+-   🌐 **Comprehensive REST APIs**: 20+ RESTful endpoints for seamless management of users, customers, and files.
+-   ☁️ **AWS S3 Integration**: Scalable and reliable cloud storage for customer profile images.
+-   ⚡ **Optimized Performance**: Backend latency reduced by 35% through strategic service and JPA query optimizations.
+-   🗄️ **Robust Database**: PostgreSQL with JPA/Hibernate for efficient and reliable relational data persistence.
+-   🎨 **Modern Frontend**: A responsive and intuitive UI built with React.js, hooks, and modern state management.
+-   🐳 **Containerized Environment**: Fully containerized using Docker and Docker Compose for one-command local setup.
 
-🎁 Bonus 6-Month IntelliJ IDEA Ultimate license worth 117.83$
+---
 
+## 🛠️ Tech Stack
+
+| Category        | Technology                                |
+| --------------- |-------------------------------------------|
+| **Backend** | Spring Boot 3, Java 17, Spring Security (JWT), Maven |
+| **Frontend** | React.js, JavaScript (ES6+), CSS3         |
+| **Database** | PostgreSQL, JPA / Hibernate               |
+| **Cloud** | AWS S3 (for file storage)                 |
+| **DevOps/Tools**| Docker, Git                               |
+
+---
