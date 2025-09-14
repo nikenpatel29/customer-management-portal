@@ -40,37 +40,36 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const login = async (usernameAndPassword) => {
-    try {
-      const res = await performLogin(usernameAndPassword);
+const login = async (usernameAndPassword) => {
+  try {
+    const res = await performLogin(usernameAndPassword);
 
-      // Get token from headers (normalize)
-      const jwtHeader = res.headers["authorization"] || res.headers["Authorization"];
-      if (!jwtHeader) throw new Error("No authorization token received");
+    // Get token from response body
+    const token = res.data.accessToken;
+    if (!token) throw new Error("No authorization token received");
 
-      const token = jwtHeader.startsWith("Bearer ") ? jwtHeader.slice(7) : jwtHeader;
-      localStorage.setItem("access_token", token);
+    localStorage.setItem("access_token", token);
 
-      // Initialize customer state
-      const decoded = jwtDecode(token);
-      const storedProfile = JSON.parse(localStorage.getItem("customer_profile") || "{}");
+    const decoded = jwtDecode(token);
+    const storedProfile = JSON.parse(localStorage.getItem("customer_profile") || "{}");
 
-      setCustomer({
-        username: decoded.sub,
-        roles: decoded.scopes,
-        firstName: storedProfile.firstName || "",
-        lastName: storedProfile.lastName || "",
-        profilePicture:
-          storedProfile.profilePicture ||
-          "https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9",
-      });
+    setCustomer({
+      username: decoded.sub,
+      roles: decoded.scopes,
+      firstName: storedProfile.firstName || "",
+      lastName: storedProfile.lastName || "",
+      profilePicture:
+        storedProfile.profilePicture ||
+        "https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9",
+    });
 
-      return res;
-    } catch (err) {
-      console.error("Login error:", err);
-      throw err;
-    }
-  };
+    return res;
+  } catch (err) {
+    console.error("Login error:", err);
+    throw err;
+  }
+};
+
 
   const logOut = () => {
     localStorage.removeItem("access_token");
