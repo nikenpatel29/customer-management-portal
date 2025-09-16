@@ -5,6 +5,9 @@ import {saveCustomer} from "../../services/client.js";
 import {successNotification, errorNotification} from "../../services/notification.js";
 
 const MyTextInput = ({label, ...props}) => {
+    // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
+    // which we can spread on <input>. We can use field meta to show an error
+    // message if the field is invalid and it has been touched (i.e. visited)
     const [field, meta] = useField(props);
     return (
         <Box>
@@ -36,129 +39,104 @@ const MySelect = ({label, ...props}) => {
     );
 };
 
+// And now we can use these
 const CreateCustomerForm = ({ onSuccess }) => {
     return (
-        <Formik
-            initialValues={{
-                name: '',
-                email: '',
-                age: '', // FIX: Change from 0 to empty string
-                gender: '',
-                password: ''
-            }}
-            validationSchema={Yup.object({
-                name: Yup.string()
-                    .max(50, 'Must be 50 characters or less') // Increased limit
-                    .required('Name is required'),
-                email: Yup.string()
-                    .email('Must be a valid email address') // Fixed validation message
-                    .required('Email is required'),
-                age: Yup.number()
-                    .min(16, 'Must be at least 16 years of age')
-                    .max(100, 'Must be less than 100 years of age')
-                    .required('Age is required'), // Added required message
-                password: Yup.string()
-                    .min(4, 'Must be 4 characters or more')
-                    .max(20, 'Must be 20 characters or less') // Increased limit
-                    .required('Password is required'),
-                gender: Yup.string()
-                    .oneOf(
-                        ['MALE', 'FEMALE'],
-                        'Please select a valid gender'
-                    )
-                    .required('Gender is required'),
-            })}
-            onSubmit={async (customer, {setSubmitting, resetForm}) => {
-                try {
+        <>
+            <Formik
+                initialValues={{
+                    name: '',
+                    email: '',
+                    age: 0,
+                    gender: '',
+                    password: ''
+                }}
+                validationSchema={Yup.object({
+                    name: Yup.string()
+                        .max(15, 'Must be 15 characters or less')
+                        .required('Required'),
+                    email: Yup.string()
+                        .email('Must be 20 characters or less')
+                        .required('Required'),
+                    age: Yup.number()
+                        .min(16, 'Must be at least 16 years of age')
+                        .max(100, 'Must be less than 100 years of age')
+                        .required(),
+                    password: Yup.string()
+                        .min(4, 'Must be 4 characters or more')
+                        .max(15, 'Must be 15 characters or less')
+                        .required('Required'),
+                    gender: Yup.string()
+                        .oneOf(
+                            ['MALE', 'FEMALE'],
+                            'Invalid gender'
+                        )
+                        .required('Required'),
+                })}
+                onSubmit={(customer, {setSubmitting}) => {
                     setSubmitting(true);
-                    console.log('Submitting customer:', customer); // Debug log
-
-                    const res = await saveCustomer(customer);
-                    console.log('Response received:', res); // Debug log
-
-                    successNotification(
-                        "Customer saved",
-                        `${customer.name} was successfully saved`
-                    );
-
-                    // FIX: Check if onSuccess exists and handle token properly
-                    if (onSuccess && res.headers && res.headers["authorization"]) {
-                        onSuccess(res.headers["authorization"]);
-                    } else if (onSuccess) {
-                        // If no token in header, still call onSuccess
-                        onSuccess();
-                    }
-
-                    resetForm(); // Reset form after successful submission
-                } catch (err) {
-                    console.error('Error saving customer:', err); // Debug log
-                    errorNotification(
-                        err.code || "Error",
-                        err.response?.data?.message || "Failed to save customer"
-                    );
-                } finally {
-                    setSubmitting(false);
-                }
-            }}
-        >
-            {({isValid, isSubmitting, values}) => {
-                // Debug log to see form state
-                console.log('Form state:', { isValid, isSubmitting, values });
-
-                return (
+                    saveCustomer(customer)
+                        .then(res => {
+                            console.log(res);
+                            successNotification(
+                                "Customer saved",
+                                `${customer.name} was successfully saved`
+                            )
+                            onSuccess(res.headers["authorization"]);
+                        }).catch(err => {
+                            console.log(err);
+                            errorNotification(
+                                err.code,
+                                err.response.data.message
+                            )
+                    }).finally(() => {
+                         setSubmitting(false);
+                    })
+                }}
+            >
+                {({isValid, isSubmitting}) => (
                     <Form>
                         <Stack spacing={"24px"}>
                             <MyTextInput
-                                label="Full Name"
+                                label="Name"
                                 name="name"
                                 type="text"
-                                placeholder="Enter your full name"
+                                placeholder="Niken"
                             />
 
                             <MyTextInput
                                 label="Email Address"
                                 name="email"
                                 type="email"
-                                placeholder="your.email@example.com"
+                                placeholder="nikenpatel1229@gmail.com"
                             />
 
                             <MyTextInput
                                 label="Age"
                                 name="age"
                                 type="number"
-                                placeholder="Enter your age"
-                                min="16"
-                                max="100"
+                                placeholder="19"
                             />
 
                             <MyTextInput
                                 label="Password"
                                 name="password"
                                 type="password"
-                                placeholder="Create a secure password"
+                                placeholder={"pick a secure password"}
                             />
 
                             <MySelect label="Gender" name="gender">
-                                <option value="">Select your gender</option>
+                                <option value="">Select gender</option>
                                 <option value="MALE">Male</option>
                                 <option value="FEMALE">Female</option>
                             </MySelect>
 
-                            <Button
-                                disabled={!isValid || isSubmitting}
-                                type="submit"
-                                colorScheme="blue"
-                                size="lg"
-                                isLoading={isSubmitting}
-                                loadingText="Creating Account..."
-                            >
-                                {isSubmitting ? "Creating Account..." : "Create Account"}
-                            </Button>
+                            <Button disabled={!isValid || isSubmitting} type="submit">Submit</Button>
                         </Stack>
                     </Form>
-                );
-            }}
-        </Formik>
+                )}
+            </Formik>
+        </>
     );
 };
 

@@ -22,38 +22,18 @@ const Customer = () => {
 
     const fetchCustomers = () => {
         setLoading(true);
-        setError(""); // Clear previous errors
-
-        getCustomers()
-            .then(res => {
-                setCustomers(res.data);
-                setError(""); // Clear error on success
-            })
-            .catch(err => {
-                console.error("Error fetching customers:", err);
-
-                // Handle different error types
-                let errorMessage = "Failed to fetch customers";
-
-                if (err.code === 'ERR_NETWORK' || err.code === 'ERR_CONNECTION_REFUSED') {
-                    errorMessage = "Cannot connect to server. Make sure your backend is running on port 8080.";
-                } else if (err.response && err.response.data && err.response.data.message) {
-                    errorMessage = err.response.data.message;
-                } else if (err.message) {
-                    errorMessage = err.message;
-                }
-
-                setError(errorMessage);
-
-                errorNotification(
-                    "Connection Error",
-                    errorMessage
-                );
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    };
+        getCustomers().then(res => {
+            setCustomers(res.data)
+        }).catch(err => {
+            setError(err.response.data.message)
+            errorNotification(
+                err.code,
+                err.response.data.message
+            )
+        }).finally(() => {
+            setLoading(false)
+        })
+    }
 
     useEffect(() => {
         fetchCustomers();

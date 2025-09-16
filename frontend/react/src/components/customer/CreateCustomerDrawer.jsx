@@ -22,13 +22,13 @@ const CreateCustomerDrawer = ({ fetchCustomers }) => {
             colorScheme={"teal"}
             onClick={onOpen}
         >
-            Create a new customer
+            Create customer
         </Button>
         <Drawer isOpen={isOpen} onClose={onClose} size={"xl"}>
             <DrawerOverlay />
             <DrawerContent>
                 <DrawerCloseButton />
-                <DrawerHeader>Create a new customer</DrawerHeader>
+                <DrawerHeader>Create new customer</DrawerHeader>
 
                 <DrawerBody>
                     <CreateCustomerForm
